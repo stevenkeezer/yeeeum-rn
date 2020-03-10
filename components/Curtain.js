@@ -24,20 +24,30 @@ export default function Curtain({ bgY }) {
           height: null
         }}
       ></Image>
-      <Text
-        color="#4F8EF7"
-        style={{
-          position: "absolute",
-          fontSize: 55,
-          flex: 1,
-          top: height / 2 - 40,
-          fontWeight: "bold",
-          color: "#f25925",
-          left: width / 2 - 15
-        }}
-      >
+      <Text color="#4F8EF7" style={styles.logo}>
         Y
       </Text>
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  logo: {
+    position: "absolute",
+    fontSize: 55,
+    flex: 1,
+    top: height / 2 - 40,
+    fontWeight: "bold",
+    color: "#007AFF",
+    left: width / 2 - 15
+  },
+  recipeImage: {
+    flex: 1,
+    width: null,
+    height: null,
+    resizeMode: "cover",
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15
+  },
+  recipeTitle: {}
+});

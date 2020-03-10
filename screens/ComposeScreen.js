@@ -5,6 +5,7 @@ import {
   OutlinedTextField
 } from "react-native-material-textfield";
 import { Dropdown } from "react-native-material-dropdown-v2";
+import FabCompose from "../components/FabCompose";
 import { Ionicons } from "@expo/vector-icons";
 import { Formik, FieldArray } from "formik";
 import Camera from "../components/Camera.js";
@@ -26,6 +27,7 @@ import {
   Dimensions,
   ImageBackground,
   Image,
+  StyleSheet,
   Picker,
   FlatList
 } from "react-native";
@@ -75,14 +77,7 @@ export default function ComposeScreen() {
   return (
     <>
       <Container>
-        <Content
-          showsVerticalScrollIndicator={false}
-          style={{
-            flex: 1
-            // flexGrow: 1
-            // backgroundColor: "#D3D3D3",
-          }}
-        >
+        <Content showsVerticalScrollIndicator={false} style={{}}>
           <ImageBackground
             source={require("../assets/images/food.png")}
             style={{
@@ -95,84 +90,6 @@ export default function ComposeScreen() {
           ></ImageBackground>
           <Swiper loop={false} showsPagination={false} index={0}>
             <View style={{ flex: 1 }}>
-              <Text></Text>
-              {/* <View style={{ flexDirection: "row", marginHorizontal: 8 }}>
-                <View style={{ flex: 1, marginTop: 10 }}>
-                  <FilledTextField
-                    label="Title"
-                    lineWidth={0}
-                    inputContainerStyle={{
-                      backgroundColor: "white",
-                      shadowOffset: { width: 2, height: 2 },
-                      shadowColor: "black",
-                      shadowOpacity: 0.1,
-                      borderBottomLeftRadius: 5,
-                      borderBottomRightRadius: 5,
-                      borderTopLeftRadius: 5,
-                      borderTopRightRadius: 5,
-                      height: 50
-                    }}
-                    borderColor="white"
-                    formatText={formatText}
-                    onSubmitEditing={onSubmit}
-                    characterRestriction={140}
-                    ref={fieldRef}
-                    tintColor="#0aa287"
-                    fontSize={16}
-                  />
-                  <FilledTextField
-                    label="Description"
-                    formatText={formatText}
-                    lineWidth={0}
-                    inputContainerStyle={{
-                      backgroundColor: "white",
-                      shadowOffset: { width: 2, height: 2 },
-                      shadowColor: "black",
-                      shadowOpacity: 0.1,
-                      borderBottomLeftRadius: 5,
-                      borderBottomRightRadius: 5,
-                      height: 50,
-                      borderTopLeftRadius: 5,
-                      borderTopRightRadius: 5
-                    }}
-                    onSubmitEditing={onSubmit}
-                    ref={fieldRef2}
-                    tintColor="#0aa287"
-                    multiline={true}
-                    fontSize={16}
-                    borderColor="white"
-                  />
-                </View>
-              </View> */}
-
-              <View>
-                {/* <RadioForm
-                  radio_props={radio_props}
-                  initial={0}
-                  onPress={value => {
-                    setRadio(value);
-                  }}
-                  // formHorizontal={true}
-                  buttonColor={"#00a287"}
-                  buttonOuterColor={"#00a287"}
-                  selectedButtonColor={"#00a287"}
-                  buttonSize={10}
-                  style={{ padding: 9 }}
-                /> */}
-                {/* <Dropdown data={data} label="Difficulty"></Dropdown> */}
-                {/* <Picker
-                  selectedValue={}
-                  style={{ height: 50, width: 100 }}
-                  onValueChange={(itemValue, itemIndex) =>
-                    // this.setState({ language: itemValue })
-                    // console.log("jo")
-                    setRadio(itemValue)
-                  }
-                  >
-                  <Picker.Item label="Java" value="java" />
-                  <Picker.Item label="JavaScript" value="js" />
-                </Picker> */}
-              </View>
               <Formik
                 initialValues={{
                   ingredients: [
@@ -193,23 +110,13 @@ export default function ComposeScreen() {
                   arrayHelpers,
                   setFieldValue
                 }) => (
-                  <View style={{ height: "73%" }}>
+                  <View style={{ height: height - height / 4 }}>
                     <View style={{ flexDirection: "row", marginHorizontal: 8 }}>
                       <View style={{ flex: 1, marginTop: 10 }}>
                         <FilledTextField
                           label="Title"
                           lineWidth={0}
-                          inputContainerStyle={{
-                            backgroundColor: "white",
-                            shadowOffset: { width: 2, height: 2 },
-                            shadowColor: "black",
-                            shadowOpacity: 0.2,
-                            borderBottomLeftRadius: 5,
-                            borderBottomRightRadius: 5,
-                            borderTopLeftRadius: 5,
-                            borderTopRightRadius: 5,
-                            height: 50
-                          }}
+                          inputContainerStyle={styles.inputContainer}
                           borderColor="white"
                           formatText={formatText}
                           onSubmitEditing={onSubmit}
@@ -224,17 +131,7 @@ export default function ComposeScreen() {
                           label="Description"
                           formatText={formatText}
                           lineWidth={0}
-                          inputContainerStyle={{
-                            backgroundColor: "white",
-                            shadowOffset: { width: 2, height: 2 },
-                            shadowColor: "black",
-                            shadowOpacity: 0.2,
-                            borderBottomLeftRadius: 5,
-                            borderBottomRightRadius: 5,
-                            // height: 50,
-                            borderTopLeftRadius: 5,
-                            borderTopRightRadius: 5
-                          }}
+                          inputContainerStyle={styles.inputContainer}
                           onSubmitEditing={onSubmit}
                           ref={fieldRef2}
                           tintColor="#0aa287"
@@ -376,53 +273,17 @@ export default function ComposeScreen() {
                         }
                         title="Submit"
                       >
-                        <View
-                          style={{
-                            borderRadius: 4,
-                            borderWidth: 0.5,
-                            backgroundColor: "#00a287",
-                            borderColor: "#00a287",
-                            justifyContent: "center",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            padding: 5,
-                            marginTop: 10,
-                            shadowOffset: { width: 0, height: 0 },
-                            shadowColor: "black",
-                            shadowOpacity: 0.37,
-                            marginHorizontal: 8
-                          }}
-                        >
+                        <View style={styles.submitBtnContainer}>
                           <Ionicons
                             size={28}
                             style={{ color: "#00a287" }}
                             name="ios-add-circle-outline"
                           ></Ionicons>
-                          <Text style={{ color: "white" }}>
-                            {" "}
-                            Add Ingredient
-                          </Text>
+                          <Text style={{ color: "white" }}>Add Ingredient</Text>
                         </View>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={handleSubmit} title="Submit">
-                        <View
-                          style={{
-                            borderRadius: 4,
-                            borderWidth: 0.5,
-                            backgroundColor: "#00a287",
-                            borderColor: "#00a287",
-                            justifyContent: "center",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            padding: 5,
-                            marginTop: 10,
-                            shadowOffset: { width: 0, height: 0 },
-                            color: "white",
-                            shadowColor: "black",
-                            shadowOpacity: 0.37,
-                            marginHorizontal: 8
-                          }}
-                        >
+                        <View style={styles.submitBtnContainer}>
                           <Ionicons
                             size={28}
                             style={{ color: "white" }}
@@ -435,35 +296,9 @@ export default function ComposeScreen() {
                   </View>
                 )}
               </Formik>
+            </View>
 
-              {/* <FilledTextField
-                label="Directions"
-                formatText={formatText}
-                ref={fieldRef}
-                multiline={true}
-                tintColor="#0aa287"
-                labelTextStyle={{ color: "red" }}
-                fontSize={16}
-                inputContainerStyle={{
-                  backgroundColor: "white",
-                  marginTop: 10,
-                  shadowOffset: { width: 2, height: 2 },
-                  shadowColor: "black",
-                  shadowOpacity: 0.1,
-                  borderBottomLeftRadius: 5,
-                  borderBottomRightRadius: 5,
-                  borderTopLeftRadius: 5,
-                  borderTopRightRadius: 5
-                }}
-              /> */}
-            </View>
-            <View
-              style={{
-                flex: 1
-              }}
-            >
-              <Camera></Camera>
-            </View>
+            <Camera></Camera>
           </Swiper>
         </Content>
       </Container>
@@ -471,17 +306,47 @@ export default function ComposeScreen() {
   );
 }
 
+const styles = StyleSheet.create({
+  inputContainer: {
+    backgroundColor: "white",
+    shadowOffset: { width: 2, height: 2 },
+    shadowColor: "black",
+    shadowOpacity: 0.2,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    height: 50
+  },
+  submitBtnContainer: {
+    borderRadius: 4,
+    borderWidth: 0.5,
+    backgroundColor: "#00a287",
+    borderColor: "#00a287",
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 5,
+    marginTop: 10,
+    shadowOffset: { width: 0, height: 0 },
+    shadowColor: "black",
+    shadowOpacity: 0.37,
+    marginHorizontal: 8
+  }
+});
+
 const startCamera = () => {
   console.log("hi");
 };
 
 ComposeScreen.navigationOptions = ({ navigation }) => ({
   title: "New Recipe",
+
   headerRight: (
     <Ionicons
       onPress={() => startCamera()}
       name="ios-camera"
-      color="grey"
+      color="#007AFF"
       size={28}
       style={{ marginHorizontal: 20 }}
     />

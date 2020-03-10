@@ -1,40 +1,63 @@
 import * as WebBrowser from "expo-web-browser";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import Animated, { interpolate, Extrapolate } from "react-native-reanimated";
 import { createSwitchNavigator, createAppContainer } from "react-navigation";
 import {
   Image,
   Platform,
-  ScrollView,
   StyleSheet,
   SafeAreaView,
   Text,
   View,
   Dimensions,
-  Animated,
   AsyncStorage,
   TouchableOpacity
 } from "react-native";
 
-import Icon from "react-native-vector-icons/Ionicons";
-import { MonoText } from "../components/StyledText";
-import { TextInput, FlatList } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { useSafeArea } from "react-native-safe-area-context";
-import RecipeItem from "../components/RecipeItem";
-import Home from "../components/Explore/Home.js";
 import RecipeDetails from "./RecipeDetail.js";
-
-export default function HomeScreen() {
+import Home from "../components/Explore/Home.js";
+import RecipeItem from "../components/RecipeItem";
+import Icon from "react-native-vector-icons/Ionicons";
+import { TextInput, FlatList } from "react-native-gesture-handler";
+export default function HomeScreen(props) {
   const [recipes, setRecipes] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [hide, setHide] = useState(false);
 
   const { height, width } = Dimensions.get("window");
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const endHeaderHeight = 50;
+  const startHeaderHeight = 80;
+
+  const animatedHeaderHeight = interpolate(scrollY, {
+    inputRange: [0, 50],
+    outputRange: [startHeaderHeight, endHeaderHeight],
+    extrapolate: Extrapolate.CLAMP
+  });
+
+  const animatedOpacity = interpolate(animatedHeaderHeight, {
+    inputRange: [endHeaderHeight, startHeaderHeight],
+    outputRange: [0, 1],
+    extrapolate: Extrapolate.CLAMP
+  });
+
+  const animatedOpacityHeader = interpolate(animatedHeaderHeight, {
+    inputRange: [endHeaderHeight, startHeaderHeight],
+    outputRange: [0.3, 0],
+    extrapolate: Extrapolate.CLAMP
+  });
+
+  const animatedTagTop = interpolate(animatedHeaderHeight, {
+    inputRange: [endHeaderHeight, startHeaderHeight],
+    outputRange: [-30, 10],
+    extrapolate: Extrapolate.CLAMP
+  });
+
   const getRecipes = async () => {
     const response = await fetch("https://yeeeum.herokuapp.com/posts");
     const data = await response.json();
-    // console.log({ data });
     if (data) {
       setRecipes(data);
     }
@@ -49,21 +72,20 @@ export default function HomeScreen() {
   useEffect(() => {
     getUserInfo();
     getRecipes();
-    // showmethemoney();
   }, []);
 
   // const showmethemoney = async () => {
   //   console.log(typeof (await AsyncStorage.getItem("user")));
-  // };
+  // };i
 
   const RecipeDetail = props => {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={styles.recipeDetail}>
         <Text>recipe details</Text>
         <TouchableOpacity
-          onPress={() => props.navigation.navigate("HomeScreen")}
+          onPress={() => props.navigation.navigate("DetailScreen")}
         >
-          <Text>back</Text>
+          <Text>go to detail page</Text>
         </TouchableOpacity>
       </View>
     );
@@ -82,114 +104,65 @@ export default function HomeScreen() {
         <AppContainer />
       ) : (
         <View style={styles.container}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ flex: 1 }}>
-              <View
+          <SafeAreaView style={styles.container}>
+            <Animated.View style={styles.container}>
+              <Animated.View
                 style={{
-                  height: 80
+                  height: animatedHeaderHeight,
+                  marginBottom: 15,
+                  marginTop: 8
                 }}
               >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    padding: 10,
-                    backgroundColor: "white",
-                    marginHorizontal: 25,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowColor: "black",
-                    shadowOpacity: 0.17,
-                    borderWidth: 1,
-                    borderColor: "#dddddd",
-                    marginTop: 15,
-                    borderRadius: 7
-                  }}
-                >
+                <View style={styles.searchBar}>
                   <Icon
                     name="ios-search"
                     size={20}
-                    style={{ marginRight: 10 }}
+                    style={styles.searchIcon}
                   ></Icon>
                   <TextInput
                     placeholder="Search your favorite recipes"
-                    style={{
-                      flex: 1,
-                      fontWeight: "700",
-                      backgroundColor: "white",
-                      overflow: "hidden"
-                    }}
+                    style={styles.searchInput}
                   ></TextInput>
                 </View>
+
                 <Animated.View
                   style={{
                     flexDirection: "row",
                     marginHorizontal: 25,
                     position: "relative",
-                    top: 5
+                    top: animatedTagTop,
+                    opacity: animatedOpacity
                   }}
                 >
-                  <View
-                    style={{
-                      minHeight: 20,
-                      minWidth: 40,
-                      padding: 5,
-                      borderRadius: 2,
-                      marginRight: 5
-                    }}
-                  >
-                    <Text style={{ fontWeight: "700", fontSize: 10 }}>
-                      Chicken
-                    </Text>
+                  <View style={styles.category}>
+                    <Text style={styles.catgeoryText}>Chicken</Text>
                   </View>
-                  <View
-                    style={{
-                      minHeight: 20,
-                      minWidth: 40,
-                      padding: 5,
-                      backgroundColor: "white",
-                      borderRadius: 2,
-                      marginRight: 5
-                    }}
-                  >
-                    <Text style={{ fontWeight: "700", fontSize: 10 }}>
-                      Steak
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      minHeight: 20,
-                      minWidth: 40,
-                      padding: 5,
-                      backgroundColor: "white",
-                      borderRadius: 2
-                    }}
-                  >
-                    <Text style={{ fontWeight: "700", fontSize: 10 }}>
-                      Vegan
-                    </Text>
+                  <View style={styles.category}>
+                    <Text style={styles.catgeoryText}>Vegan</Text>
                   </View>
                 </Animated.View>
-              </View>
-              <ScrollView scrollEventThrottle={16}>
+              </Animated.View>
+
+              <Animated.ScrollView
+                scrollEventThrottle={16}
+                onScroll={Animated.event([
+                  {
+                    nativeEvent: {
+                      contentOffset: {
+                        y: scrollY
+                      }
+                    }
+                  }
+                ])}
+              >
                 <View
-                  style={{ flex: 1, paddingTop: 20, backgroundColor: "white" }}
+                  style={{ flex: 1, paddingTop: 10, backgroundColor: "white" }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontWeight: "700",
-                      paddingHorizontal: 25
-                    }}
-                  >
+                  <Text style={styles.welcomeTitle}>
                     What can we help you find, {userInfo.username}?
                   </Text>
 
-                  <View
-                    style={{
-                      height: 160,
-                      marginTop: 20,
-                      borderRadius: 5
-                    }}
-                  >
+                  <View style={styles.flatlistContainer}>
                     <FlatList
                       horizontal={true}
                       showsHorizontalScrollIndicator={false}
@@ -198,39 +171,24 @@ export default function HomeScreen() {
                           <RecipeItem recipe={r} setHide={setHide}></RecipeItem>
                         );
                       }}
-                      style={{
-                        flex: 1,
-                        paddingHorizontal: 15
-                      }}
+                      style={styles.flatlist}
                       data={recipes}
                       keyExtractor={(item, index) => index.toString()}
                     ></FlatList>
                   </View>
-                  <View style={{ marginTop: 40, paddingHorizontal: 25 }}>
-                    <Text style={{ fontSize: 24, fontWeight: "700" }}>
-                      Hot off the grill
-                    </Text>
-                    <Text
-                      style={{
-                        fontWeight: "100",
-                        marginTop: 10
-                      }}
-                    >
+
+                  <View style={styles.discoverContainer}>
+                    <Text style={styles.discoverHeader}>Hot off the grill</Text>
+                    <Text style={styles.discoverSubHeader}>
                       A new way of discovering and loving your favorite recipes
                     </Text>
+
                     <View
                       style={{ width: width - 50, height: 200, marginTop: 20 }}
                     >
                       {recipes[0] && (
                         <Image
-                          style={{
-                            flex: 1,
-                            height: null,
-                            width: null,
-                            resizeMode: "cover",
-                            borderRadius: 5,
-                            paddingHorizontal: 29
-                          }}
+                          style={styles.discoverImage}
                           source={{
                             uri: `https://yeeeum.s3-us-west-1.amazonaws.com/${recipes[3].images[0].img_url}`
                           }}
@@ -239,26 +197,11 @@ export default function HomeScreen() {
                     </View>
                   </View>
                 </View>
-                <View style={{ marginTop: 40 }}>
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontWeight: "700",
 
-                      paddingHorizontal: 25
-                    }}
-                  >
-                    Food around the world
-                  </Text>
-                  <View
-                    style={{
-                      paddingHorizontal: 25,
-                      marginTop: 20,
-                      flexDirection: "row",
-                      flexWrap: "wrap",
-                      justifyContent: "space-between"
-                    }}
-                  >
+                <View style={styles.worldContainer}>
+                  <Text style={styles.worldHeader}>Food around the world</Text>
+
+                  <View style={styles.worldCard}>
                     <Home
                       width={width}
                       recipes={recipes}
@@ -276,8 +219,8 @@ export default function HomeScreen() {
                     ></Home>
                   </View>
                 </View>
-              </ScrollView>
-            </View>
+              </Animated.ScrollView>
+            </Animated.View>
           </SafeAreaView>
         </View>
       )}
@@ -306,6 +249,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff"
   },
+  flatlist: { flex: 1, paddingHorizontal: 15 },
+  flatlistContainer: {
+    height: 160,
+    marginTop: 20,
+    borderRadius: 5
+  },
+  welcomeTitle: { fontSize: 24, fontWeight: "700", paddingHorizontal: 25 },
+  category: {
+    minHeight: 20,
+    minWidth: 40,
+    padding: 5,
+    borderRadius: 2,
+    marginRight: 5
+    // borderWidth: 0.2,
+  },
+  catgeoryText: { fontWeight: "700", fontSize: 10 },
+  discoverContainer: { marginTop: 40, paddingHorizontal: 25 },
+  discoverImage: {
+    flex: 1,
+    height: null,
+    width: null,
+    resizeMode: "cover",
+    borderRadius: 5,
+    paddingHorizontal: 29
+  },
+  discoverHeader: { fontSize: 24, fontWeight: "700" },
+  discoverSubHeader: { fontWeight: "100", marginTop: 10 },
+  worldHeader: { fontSize: 24, fontWeight: "700", paddingHorizontal: 25 },
+  worldCard: {
+    paddingHorizontal: 25,
+    marginTop: 20,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between"
+  },
+  worldContainer: { marginTop: 40 },
+  searchBar: {
+    flexDirection: "row",
+    padding: 10,
+    zIndex: 10,
+    top: 5,
+    backgroundColor: "white",
+    marginHorizontal: 25,
+    // shadowOffset: { width: 0, height: 0 },
+    // shadowColor: "black",
+    // shadowOpacity: 0.17,
+    borderWidth: 1,
+    borderColor: "#dddddd",
+    borderRadius: 7,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3
+  },
+  searchIcon: { marginRight: 10, color: "grey" },
+  searchInput: {
+    flex: 1,
+    fontWeight: "700",
+    backgroundColor: "white",
+    overflow: "hidden"
+  },
   developmentModeText: {
     marginBottom: 20,
     color: "rgba(0,0,0,0.4)",
@@ -328,6 +336,7 @@ const styles = StyleSheet.create({
     marginTop: 3,
     marginLeft: -10
   },
+  recipeDetail: { fontWeight: "700", fontSize: 10 },
   getStartedContainer: {
     alignItems: "center",
     marginHorizontal: 50

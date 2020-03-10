@@ -36,7 +36,7 @@ export default function LoginForm(props) {
           style={styles.person}
           name="ios-person"
           size={26}
-          color="rgba(0, 0, 0, 0.7)"
+          color="#007AFF"
         ></Ionicons>
         <TextInput
           style={styles.textInputEmail}
@@ -52,7 +52,7 @@ export default function LoginForm(props) {
         <Ionicons
           name="ios-lock"
           size={28}
-          color="rgba(0, 0, 0, 0.7)"
+          color="#007AFF"
           style={styles.inputIcon}
         ></Ionicons>
         <TextInput
@@ -72,7 +72,7 @@ export default function LoginForm(props) {
           <Ionicons
             size={26}
             style={styles.btnEye}
-            color="rgba(0, 0, 0, 0.7)"
+            color="#007AFF"
             name={press ? "ios-eye" : "ios-eye-off"}
           ></Ionicons>
         </TouchableOpacity>

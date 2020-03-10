@@ -140,7 +140,7 @@ export default function App(props) {
         body: JSON.stringify(user)
       });
       const data = await response.json();
-      console.log({ data });
+      // console.log({ data });
       await AsyncStorage.setItem("user", JSON.stringify(data));
 
       const result = await AsyncStorage.setItem(
@@ -148,11 +148,11 @@ export default function App(props) {
         JSON.stringify(data),
         () => props.setShowHomeScreen(true)
       );
-      console.log("here is my result", { result });
+      // console.log("here is my result", { result });
       if (data) {
       }
     } catch (error) {
-      console.log("Error: ", error);
+      // console.log("Error: ", error);
     }
   };
 
