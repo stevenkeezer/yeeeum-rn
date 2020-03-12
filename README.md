@@ -50,7 +50,7 @@
 ## About The Project
 
   <a href="https://yeeeum.com">
-    <img src="https://i.imgur.com/kM3BvZl.png" alt="Logo" width="100%" height="100%">
+    <img src="https://www.stevenkeezer.com/static/media/react.868e11e8.png" alt="Logo" width="100%" height="100%">
   </a>
   <br/>
 
@@ -68,9 +68,8 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 
 ### Built With
 
-- [Reactstrap](https://reactstrap.github.io/)
-- [Python](https://www.python.org/)
-- [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+- [React Native](https://reactnative.dev/docs/getting-started)
+- [Expo](https://docs.expo.io/)
 - [AWS S3](https://aws.amazon.com/s3/)
 
 <!-- GETTING STARTED -->
@@ -121,12 +120,12 @@ npm install
 
 <p align="center">
   <a href="https://yeeeum.com">
-    <img src="https://www.stevenkeezer.com/static/media/react.868e11e8.png" alt="Logo" width="60%" height="60%">
+    <img src="https://media.giphy.com/media/XEURPZuQaAYzYlE3WR/giphy.gif" alt="Logo" width="60%" height="60%">
   </a>
 </p>
 <p align="center">
   <a href="https://yeeeum.com">
-    <img src="https://media.giphy.com/media/XEURPZuQaAYzYlE3WR/giphy.gif" alt="Logo" width="60%" height="60%">
+    <img src="https://www.stevenkeezer.com/static/media/react.868e11e8.png" alt="Logo" width="60%" height="60%">
   </a>
 </p>
 
