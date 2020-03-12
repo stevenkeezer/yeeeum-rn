@@ -141,6 +141,8 @@ export default function RecipeScreen(props) {
     // console.log("This row opened", rowKey);
   };
 
+  console.log("recipes.leng", recipes.length);
+
   const renderItem = data => (
     <TouchableHighlight
       onPress={() => {
@@ -285,7 +287,15 @@ export default function RecipeScreen(props) {
       </Animated.View>
 
       {recipes.length === 0 ? (
-        <SpinnerComponent />
+        <View
+          style={{
+            flex: 1,
+            alignSelf: "center",
+            alignItems: "center"
+          }}
+        >
+          <SpinnerComponent></SpinnerComponent>
+        </View>
       ) : (
         <Animated.ScrollView
           style={{ marginHorizontal: 4 }}
