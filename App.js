@@ -9,6 +9,8 @@ import Camera from "./components/Camera.js";
 
 import AppNavigator from "./navigation/AppNavigator";
 
+console.disableYellowBox = true;
+
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [showHomeScreen, setShowHomeScreen] = useState(true);
