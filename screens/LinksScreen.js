@@ -4,7 +4,8 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
-  TouchableHighlight
+  TouchableHighlight,
+  StatusBar
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
@@ -96,7 +97,9 @@ export default function LinksScreen() {
               large
               style={{ borderRadius: 5, height: 200, width: 200 }}
               source={{
-                uri: `https://yeeeum.s3-us-west-1.amazonaws.com/${data.item.images[0].img_url}`
+                uri: data.item.images[0]
+                  ? `https://yeeeum.s3-us-west-1.amazonaws.com/${data.item.images[0].img_url}`
+                  : "https://www.yeeeum.com/assets/img/food.png"
               }}
             />
           </Left>
@@ -132,8 +135,10 @@ export default function LinksScreen() {
   useEffect(() => {
     getRecipes();
   }, []);
+
   return (
     <Container>
+      <StatusBar barStyle="dark-content" translucent={true} />
       <Animated.ScrollView
         style={{ marginHorizontal: 4 }}
         scrollEventThrottle={16}

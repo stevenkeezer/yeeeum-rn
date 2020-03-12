@@ -29,6 +29,7 @@ import {
   Image,
   StyleSheet,
   Picker,
+  AsyncStorage,
   FlatList
 } from "react-native";
 const { width, height } = Dimensions.get("window");
@@ -42,9 +43,56 @@ export default function ComposeScreen() {
 
   const flatlist = React.createRef();
 
-  const onSubmit = () => {
+  const onSubmit = values => {
     let { current: field } = fieldRef;
+    createPost(values);
   };
+
+  const createPost = async input => {
+    const user = await AsyncStorage.getItem("user");
+    const token = JSON.parse(user).token;
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`
+      },
+      body: JSON.stringify(input)
+    };
+
+    const response = await fetch(
+      "https://yeeeum.herokuapp.com/post_recipe",
+      options
+    );
+    const data = await response.json();
+    if (data) {
+      console.log("sucess", data);
+    }
+  };
+
+  // const createPost = async data => {
+  // const options = {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Token ${localStorage.getItem("token")}`
+  //   },
+  //   body: JSON.stringify(data)
+  // };
+  //   const resp = await fetch(
+  //     process.env.REACT_APP_BURL + "post_recipe",
+  //     options
+  //   );
+  //   if (resp.ok) {
+  //     const data = await resp.json();
+  //     if (data.status) {
+  //       if (fileAdded) {
+  //       } else {
+  //         history.push("/upload_files");
+  //       }
+  //     }
+  //   }
+  // };
 
   const formatText = text => {
     // return text.replace(/[^+\d]/g, "");
@@ -100,7 +148,7 @@ export default function ComposeScreen() {
                   directions: "",
                   description: ""
                 }}
-                onSubmit={values => console.log(values)}
+                onSubmit={values => onSubmit(values)}
               >
                 {({
                   handleChange,

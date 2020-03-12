@@ -1,29 +1,39 @@
 import React from "react";
 import {
-  Image,
   Text,
   View,
   TouchableOpacity,
   Button,
-  StyleSheet
+  StyleSheet,
+  Image
 } from "react-native";
 
 export default function RecipeItem(props) {
   const pressHandler = () => {
     props.setHide(true);
   };
-
+  console.log(props.recipe.images[0] && props.recipe.images[0].img_url);
   return (
     <>
       <TouchableOpacity onPress={pressHandler}>
         <View style={styles.recipeContainer}>
           <View style={{ flex: 2 }}>
             <Image
-              source={{
-                uri: `https://yeeeum.s3-us-west-1.amazonaws.com/${props.recipe.images[0].img_url}`
-              }}
               style={styles.recipeImage}
+              source={{
+                uri: props.recipe.images[0]
+                  ? `https://yeeeum.s3-us-west-1.amazonaws.com/${props.recipe.images[0].img_url}`
+                  : "https://www.yeeeum.com/assets/img/food.png"
+              }}
             />
+            {/* ) : (
+              <Image
+                source={{
+                  uri: "https://www.yeeeum.com/assets/img/food.png"
+                }}
+                style={styles.recipeImage}
+              />
+            )} */}
           </View>
           <View style={styles.recipeTitle}>
             <Text>{props.recipe.title}</Text>

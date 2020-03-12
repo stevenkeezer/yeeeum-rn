@@ -2,13 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SwipeListView } from "react-native-swipe-list-view";
 import SpinnerComponent from "../components/SpinnerComponent";
+import ConfirmDelete from "../components/ConfirmDelete";
 import Animated, { interpolate, Extrapolate } from "react-native-reanimated";
 import {
+  Alert,
   StyleSheet,
   TouchableOpacity,
   TouchableHighlight,
   View,
-  Dimensions
+  Dimensions,
+  AsyncStorage,
+  SafeAreaView,
+  StatusBar
 } from "react-native";
 
 import {
@@ -19,18 +24,19 @@ import {
   Item,
   Input,
   Button,
+  ListItem,
   Right
 } from "native-base";
 
 const { width, height } = Dimensions.get("window");
 
 export default function RecipeScreen(props) {
-  const [recipes, setRecipes] = useState([])
+  const [recipes, setRecipes] = useState([]);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const endHeaderHeight = 0;
-  const startHeaderHeight = 107;
+  const startHeaderHeight = 105;
 
   const animatedHeaderHeight = interpolate(scrollY, {
     inputRange: [0, 50],
@@ -63,14 +69,43 @@ export default function RecipeScreen(props) {
   });
 
   const getRecipes = async () => {
-    const response = await fetch("https://yeeeum.herokuapp.com/posts");
-    const data = await response.json();
+    try {
+      const response = await fetch("https://yeeeum.herokuapp.com/posts");
+      const data = await response.json();
 
-    if (data) {
-      data.map((el, i) => {
-        el["key"] = `${i}`;
-      });
-      setRecipes(data);
+      if (data) {
+        data.map((el, i) => {
+          el["key"] = `${i}`;
+        });
+        setRecipes(data);
+      }
+    } catch (error) {
+      getRecipes();
+    }
+  };
+
+  const deleteRecipe = async id => {
+    const recipeId = {
+      recipe_id: id
+    };
+
+    const user = await AsyncStorage.getItem("user");
+    const token = JSON.parse(user).token;
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`
+      },
+      body: JSON.stringify(recipeId)
+    };
+    const response = await fetch(
+      "https://yeeeum.herokuapp.com/delete_recipe",
+      options
+    );
+    if (response.ok) {
+      const data = await response.json();
+      console.log("data", data);
     }
   };
 
@@ -80,16 +115,30 @@ export default function RecipeScreen(props) {
     }
   };
 
-  const deleteRow = (rowMap, rowKey) => {
-    closeRow(rowMap, rowKey);
-    const newData = [...recipes];
-    const prevIndex = recipes.findIndex(item => item.key === rowKey);
-    newData.splice(prevIndex, 1);
-    setRecipes(newData);
+  const deleteRow = (rowMap, rowKey, id) => {
+    Alert.alert("Delete Recipe", "Do you want to remove this recipe?", [
+      {
+        text: "No",
+        onPress: () => closeRow(rowMap, rowKey),
+        style: "cancel"
+      },
+      {
+        text: "Yes",
+        onPress: () => {
+          closeRow(rowMap, rowKey);
+          const newData = [...recipes];
+          const prevIndex = recipes.findIndex(item => item.key === rowKey);
+          newData.splice(prevIndex, 1);
+          setRecipes(newData);
+          deleteRecipe(id);
+        }
+      }
+    ]);
+    // propmt with confirmation
   };
 
   const onRowDidOpen = rowKey => {
-    console.log("This row opened", rowKey);
+    // console.log("This row opened", rowKey);
   };
 
   const renderItem = data => (
@@ -111,7 +160,9 @@ export default function RecipeScreen(props) {
               large
               style={{ borderRadius: 5 }}
               source={{
-                uri: `https://yeeeum.s3-us-west-1.amazonaws.com/${data.item.images[0].img_url}`
+                uri: data.item.images[0]
+                  ? `https://yeeeum.s3-us-west-1.amazonaws.com/${data.item.images[0].img_url}`
+                  : "https://www.yeeeum.com/assets/img/food.png"
               }}
             />
           </Left>
@@ -137,7 +188,7 @@ export default function RecipeScreen(props) {
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.backRightBtn, styles.backRightBtnRight]}
-        onPress={() => deleteRow(rowMap, data.item.key)}
+        onPress={() => deleteRow(rowMap, data.item.key, data.item.id)}
       >
         <Text style={styles.backTextWhite}>Delete</Text>
       </TouchableOpacity>
@@ -149,7 +200,7 @@ export default function RecipeScreen(props) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={{ marginTop: 70 }}>
       <Animated.View
         style={{
           top: animatedTagTop,
@@ -163,7 +214,7 @@ export default function RecipeScreen(props) {
           <Animated.View
             style={{
               flex: 1,
-              marginTop: 16,
+              marginTop: 10,
               flexDirection: "row",
               opacity: animatedOpacitySearch
             }}
@@ -180,24 +231,55 @@ export default function RecipeScreen(props) {
       <Animated.View
         style={{
           flexDirection: "row",
-          marginHorizontal: 13,
+          marginHorizontal: 7,
           backgroundColor: "white",
           marginTop: animatedTagTop
         }}
       >
-        <Text style={styles.listView}>List View</Text>
         <Right>
           <View style={styles.subButtonContainer}>
-            <Button style={styles.button}>
-              <Ionicons name="ios-person" style={styles.icon}>
-                {/* Favorites */} 16
-              </Ionicons>
-            </Button>
-            <Button style={styles.button}>
-              <Ionicons name="ios-heart-empty" style={styles.icon}>
-                {/* Favorites */}27
-              </Ionicons>
-            </Button>
+            <Left>
+              <Button style={styles.buttonListView} iconLeft light>
+                {/* <Icon
+                style={{ fontSize: 20, color: "#007AFF" }}
+                name="ios-heart-empty"
+              /> */}
+                <Text
+                  style={{ color: "#007AFF", paddingLeft: 12, fontSize: 17 }}
+                >
+                  List View
+                </Text>
+              </Button>
+            </Left>
+            {/* <Button style={styles.button} iconLeft light>
+              <Icon
+                style={{ fontSize: 20, color: "#007AFF" }}
+                name="ios-list"
+              />
+              <Text style={{ color: "#007AFF", paddingLeft: 12 }}></Text>
+            </Button> */}
+            <Right>
+              <Button style={styles.button} iconLeft light>
+                {/* <Icon
+                style={{ fontSize: 20, color: "#007AFF" }}
+                name="ios-heart-empty"
+              /> */}
+                <Text
+                  style={{ color: "#007AFF", paddingLeft: 12, fontSize: 17 }}
+                >
+                  Composed (2)
+                </Text>
+              </Button>
+            </Right>
+
+            {/* <Button
+              style={styles.button}
+              icon={
+                <Ionicons name="ios-heart-empty" style={styles.icon}>
+                  17
+                </Ionicons>
+              }
+            ></Button> */}
           </View>
         </Right>
       </Animated.View>
@@ -231,15 +313,16 @@ export default function RecipeScreen(props) {
           />
         </Animated.ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    flex: 1,
-    marginTop: -4
+    // flex: 1
+    position: "absolute"
+    // marginTop: 14s
   },
   header: {},
   backTextWhite: {
@@ -254,14 +337,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center"
   },
-  button: { backgroundColor: "white" },
+  button: { backgroundColor: "white", height: 30 },
+  buttonListView: {
+    justifyContent: "center",
+    height: 30,
+    backgroundColor: "white"
+  },
   headerTitle: {
-    fontSize: 35,
+    fontSize: 33,
+    marginTop: 15,
     fontWeight: "bold",
     marginBottom: 10,
     marginHorizontal: 1
   },
-  subButtonContainer: { flexDirection: "row" },
+  subButtonContainer: {
+    flexDirection: "row",
+    marginTop: 12
+  },
   input: { fontSize: 18, marginLeft: -3, marginTop: -16 },
   icon: {
     color: "#007AFF",
@@ -278,8 +370,8 @@ const styles = StyleSheet.create({
   rowFront: {
     paddingLeft: 13,
     backgroundColor: "#fff",
-    borderBottomColor: "#D9D5DC",
-    borderTopColor: "#D9D5DC",
+    borderBottomColor: "#dddddd",
+    borderTopColor: "white",
     borderTopWidth: 0.3,
     borderBottomWidth: 0.3,
     justifyContent: "center",
@@ -302,11 +394,11 @@ const styles = StyleSheet.create({
     width: 75
   },
   backRightBtnLeft: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "rgba(142,142,147, 1)",
     right: 75
   },
   backRightBtnRight: {
-    backgroundColor: "#d11a2a",
+    backgroundColor: "#FC3D39",
     right: 0
   }
 });
@@ -317,7 +409,8 @@ const startCompose = () => {
 
 RecipeScreen.navigationOptions = ({ navigation }) => {
   return {
-    headerStyle: { borderBottomWidth: 0 },
+    headerStyle: { borderBottomWidth: 0, backgroundColor: "white" },
+    headerTransparent: true,
     headerRight: (
       <Button
         style={{ backgroundColor: "white" }}

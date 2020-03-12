@@ -61,6 +61,7 @@ HomeStack.navigationOptions = {
   animationEnabled: false,
   tabBarOptions: {
     activeTintColor: "Colors.tintColor",
+    showLabel: false,
     showIcon: true,
     labelStyle: {
       fontSize: 10,
@@ -81,7 +82,7 @@ HomeStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === "ios" ? "ios-search" : "md-search"}
+      name={Platform.OS === "ios" ? "ios-home" : "md-home"}
     />
   )
 };
@@ -120,7 +121,7 @@ LinksStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === "ios" ? "ios-heart" : "md-heart"}
+      name={Platform.OS === "ios" ? "ios-search" : "md-search"}
     />
   )
 };
@@ -155,6 +156,7 @@ SettingsStack.navigationOptions = {
     }
   },
   barStyle: { backgroundColor: "#ffffff" },
+
 
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
@@ -227,9 +229,10 @@ const RecipeStack = createStackNavigator(
 );
 
 RecipeStack.navigationOptions = {
-  tabBarLabel: "Recipes",
+  tabBarLabel: "",
   animationEnabled: false,
   tabBarOptions: {
+    showLabel: false,
     activeTintColor: "Colors.tintColor",
     showIcon: true,
     labelStyle: {
@@ -252,7 +255,7 @@ RecipeStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === "ios" ? "ios-list" : "md-list"}
+      name={Platform.OS === "ios" ? "ios-filing" : "md-list"}
     />
   )
 };
@@ -270,6 +273,7 @@ const tabNavigator = createMaterialBottomTabNavigator(
   {
     animationEnabled: false,
     activeColor: "#007AFF",
+    labeled: false,
     // inactiveColor: "#3e2465",
     shifting: true,
     tabBarPosition: "bottom",

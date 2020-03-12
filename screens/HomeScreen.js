@@ -11,7 +11,8 @@ import {
   View,
   Dimensions,
   AsyncStorage,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar
 } from "react-native";
 
 import RecipeDetails from "./RecipeDetail.js";
@@ -186,11 +187,13 @@ export default function HomeScreen(props) {
                     <View
                       style={{ width: width - 50, height: 200, marginTop: 20 }}
                     >
-                      {recipes[0] && (
+                      {recipes && recipes[0] && (
                         <Image
                           style={styles.discoverImage}
                           source={{
-                            uri: `https://yeeeum.s3-us-west-1.amazonaws.com/${recipes[3].images[0].img_url}`
+                            uri: recipes[3].images[0].img_url
+                              ? `https://yeeeum.s3-us-west-1.amazonaws.com/${recipes[3].images[0].img_url}`
+                              : "https://www.yeeeum.com/assets/img/food.png"
                           }}
                         ></Image>
                       )}

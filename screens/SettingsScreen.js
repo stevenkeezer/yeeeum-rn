@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import { View, AsyncStorage, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  AsyncStorage,
+  StyleSheet,
+  Dimensions,
+  StatusBar
+} from "react-native";
 
 import {
   Container,
@@ -18,7 +24,7 @@ import {
   Separator
 } from "native-base";
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({});
 
   const getUserInfo = async () => {
@@ -34,6 +40,7 @@ export default function SettingsScreen() {
 
   const uri = "https://facebook.github.io/react-native/docs/assets/favicon.png";
   const { width, height } = Dimensions.get("window");
+
   return (
     <Container style={{ backgroundColor: "#f0eff4" }}>
       <Content style={styles.container}>
@@ -176,8 +183,6 @@ const styles = StyleSheet.create({
     marginTop: 7
   }
 });
-
-
 
 SettingsScreen.navigationOptions = {
   // title: "Settings",

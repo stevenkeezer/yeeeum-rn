@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import Animated, { interpolate, Extrapolate } from "react-native-reanimated";
+
 import {
   View,
   TouchableOpacity,
   Text,
   Image,
   ImageBackground,
-  StyleSheet
+  StyleSheet,
+  StatusBar
 } from "react-native";
 import {
   Container,
@@ -19,33 +22,75 @@ import {
   Accordion,
   Thumbnail,
   ListItem,
-  List
+  List,
+  Segment,
+  Button
 } from "native-base";
 
 export default function DetailsScreen({ navigation }) {
   const recipe = navigation.state.params.data;
+
   const newrecipe = recipe.ingredients.map(i => {
     return {
-      title: i.amount + " " + i.ingredient,
-      content: i.ingredient
+      title: (
+        <>
+          <Text style={{}}>{i.amount + " "}</Text>
+          <Text>{i.ingredient}</Text>
+        </>
+      )
+      // content: i.ingredient
     };
   });
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const endHeaderHeight = 0;
+  const startHeaderHeight = 10;
+
+  const animatedHeaderHeight = interpolate(scrollY, {
+    inputRange: [-3, 0],
+    outputRange: [startHeaderHeight, endHeaderHeight],
+    extrapolate: Extrapolate.CLAMP
+  });
+
+  const animatedFlex = interpolate(animatedHeaderHeight, {
+    inputRange: [endHeaderHeight, startHeaderHeight],
+    outputRange: [1.3, 1],
+    extrapolate: Extrapolate.CLAMP
+  });
+
+  // console.log(navigation.isFocused());
+  // useEffect(() => {
+  //   console.log(navigation.state.routeName);
+  //   // StatusBar.setBarStyle("light-content", true);
+  //   // return () => {
+  //   //   // console.log("Do some cleanup");
+  //   //   StatusBar.setBarStyle("dark-content", true);
+  //   // };
+  // }, [navigation.isFocused()]);
+
   return (
     <Container>
-      <View style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" backgroundColor="#ecf0f1" />
+      <Animated.View
+        style={{
+          flex: 1.3
+        }}
+      >
         <ImageBackground
           source={{
-            uri: `https://yeeeum.s3-us-west-1.amazonaws.com/${recipe.images[0].img_url}`
+            uri: recipe.images[0]
+              ? `https://yeeeum.s3-us-west-1.amazonaws.com/${recipe.images[0].img_url}`
+              : "https://www.yeeeum.com/assets/img/food.png"
           }}
           style={styles.background}
         >
           <LinearGradient
             colors={[
-              "rgba(0, 0, 0, .8)",
-              "rgba(0,0,0,.01)",
-              "rgba(0,0,0,.45)",
-              "rgba(0, 0, 0, .7)"
+              "rgba(0, 0, 0, .27)",
+              "rgba(0,0,0, .40)",
+              "rgba(0,0,0,.70)",
+              "rgba(0, 0, 0, .83)"
             ]}
             style={styles.gradient}
           >
@@ -63,27 +108,72 @@ export default function DetailsScreen({ navigation }) {
             </View>
           </LinearGradient>
         </ImageBackground>
+      </Animated.View>
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: "bold",
+          marginHorizontal: 20,
+          paddingTop: 30,
+          marginBottom: 20
+        }}
+      >
+        Description
+      </Text>
+      <View
+        style={{ backgroundColor: "#F8F8F8", marginBottom: 10, padding: 20 }}
+      >
+        <Text style={{}}>{recipe.description}</Text>
       </View>
-
-      <Tabs renderTabBar={() => <ScrollableTab />}>
-        <Tab heading="Inents">
-          <Content padder>
-            <Accordion
-              dataArray={newrecipe}
-              style={{ backgroundColor: "white" }}
-              icon="add"
-              expandedIcon="remove"
-              iconStyle={{ color: "green" }}
-              expandedIconStyle={{ color: "red" }}
-            />
-          </Content>
-        </Tab>
-        <Tab heading="Direcns">
-          <Content padder>
+      {/* <Tabs
+        renderTabBar={() => (test
+          <ScrollableTab style={{ backgroundColor: "white" }} />
+        )}
+      > */}
+      {/* <Tab heading="Ingredients"> */}
+      <Text
+        style={{
+          fontSize: 20,
+          fontWeight: "bold",
+          marginHorizontal: 20,
+          paddingTop: 10,
+          marginBottom: 20
+        }}
+      >
+        Ingredients
+      </Text>
+      <Animated.ScrollView
+        onScroll={Animated.event([
+          {
+            nativeEvent: {
+              contentOffset: {
+                y: scrollY
+              }
+            }
+          }
+        ])}
+      >
+        <Accordion
+          dataArray={newrecipe}
+          headerStyle={{
+            backgroundColor: "white",
+            borderBottomWidth: 1.5,
+            borderColor: "#dddddd",
+            marginHorizontal: 5
+          }}
+          icon="add-circle"
+          expandedIcon="remove-circle-outline"
+          iconStyle={{ color: "darkgreen" }}
+          expandedIconStyle={{ color: "red" }}
+        />
+      </Animated.ScrollView>
+      {/* </Tab> */}
+      {/* <Tab heading="Directions" style={{ backgroundColor: "red" }}> */}
+      {/* <Content padder>
             <Text>{recipe.directions}</Text>
           </Content>
         </Tab>
-      </Tabs>
+      </Tabs> */}
     </Container>
   );
 }
@@ -115,6 +205,9 @@ const styles = StyleSheet.create({
 
 DetailsScreen.navigationOptions = ({ navigation }) => ({
   // header: null,
+  headerTransparent: true,
+  headerTintColor: "white",
+
   // headerTitle: <Text style={{ color: "white", fontSize: 18 }}>Test</Text>,
   // headerTransparent: true,
   // headerStyle: { borderBottomWidth: 0 },
@@ -122,9 +215,9 @@ DetailsScreen.navigationOptions = ({ navigation }) => ({
     <Ionicons
       onPress={() => navigation.navigate("Compose")}
       name="ios-create"
-      color="#007AFF"
+      color="white"
       size={26}
-      style={{ marginHorizontal: 15, backgroundColor: "white" }}
+      style={{ marginHorizontal: 15, backgroundColor: "transparent" }}
     />
   )
 });

@@ -6,7 +6,7 @@ export default class SpinnerComponent extends Component {
     return (
       <Container>
         <Content>
-          <Spinner color="#dddddd" className="mt-5" />
+          <Spinner color="#d3d3d3" className="mt-5" />
         </Content>
       </Container>
     );
