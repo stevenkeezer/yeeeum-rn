@@ -120,7 +120,7 @@ npm install
 
 <p align="center">
   <a href="https://yeeeum.com">
-    <img src="https://media.giphy.com/media/kDBQ6tqEOXkUBkVmiD/giphy.gif" alt="Logo" width="100%" height="100%">
+    <img src="https://media.giphy.com/media/fUSBtBjjlkIiePF2WF/giphy.gif" alt="Logo" width="100%" height="100%">
   </a>
 </p>
 
